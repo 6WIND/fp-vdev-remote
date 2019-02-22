@@ -15,29 +15,25 @@
 
 import subprocess
 
-from fp_vdev_remote import constants
 
-
-FP_VDEV_CMD = None
-FP_VDEV_CMD_CHECK = False
+FP_RPCD_SOCKET_PATH = '/run/openvswitch/fp-rpcd.sock'
+FP_VDEV = 'fp-vdev'
+FP_VDEV_RMT = 'fp-vdev-remote'
 
 
 def command_exists(cmd):
     p = subprocess.Popen(['which', cmd], stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
-    stdout, stderr = p.communicate()
+    _, stderr = p.communicate()
     if stderr:
-        return None
-    return stdout.strip()
+        return False
+    return True
 
 
 def get_vdev_cmd():
-    global FP_VDEV_CMD
-    global FP_VDEV_CMD_CHECK
-    if FP_VDEV_CMD_CHECK is False:
-        FP_VDEV_CMD = command_exists(constants.FP_VDEV)
-        if FP_VDEV_CMD is None:
-            FP_VDEV_CMD = command_exists(constants.FP_VDEV_RMT)
-        FP_VDEV_CMD_CHECK = True
-    return FP_VDEV_CMD
-
+    if command_exists(FP_VDEV):
+        return FP_VDEV
+    elif command_exists(FP_VDEV_RMT):
+        return FP_VDEV_RMT
+    else:
+        return None
