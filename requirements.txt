@@ -1,1 +1,1 @@
-setuptools==33.1.1
+setuptools>=33.1.1
