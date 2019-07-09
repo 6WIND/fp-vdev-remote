@@ -47,7 +47,7 @@ def get_conf():
         pass
     return cfg
 
-
+# ------------------------------------------------------------------------------
 def command_exists(cmd):
     p = subprocess.Popen(['which', cmd], stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
@@ -56,7 +56,7 @@ def command_exists(cmd):
         return False
     return True
 
-
+# ------------------------------------------------------------------------------
 def get_vdev_cmd():
     if command_exists(FP_VDEV):
         return FP_VDEV
