@@ -20,8 +20,7 @@ import socket
 import sys
 import xmlrpclib
 
-from vdev_utils import FP_RPCD_SOCKET_PATH
-from vdev_utils import FP_VDEV_RMT
+import vdev_utils
 
 
 class UnixStreamHTTPConnection(httplib.HTTPConnection):
@@ -31,8 +30,8 @@ class UnixStreamHTTPConnection(httplib.HTTPConnection):
 
 
 class UnixStreamTransport(xmlrpclib.Transport, object):
-    def __init__(self, FP_RPCD_SOCKET_PATH):
-        self.socket_path = FP_RPCD_SOCKET_PATH
+    def __init__(self, sockfile):
+        self.socket_path = sockfile
         super(UnixStreamTransport, self).__init__()
 
     def make_connection(self, host):
@@ -40,7 +39,7 @@ class UnixStreamTransport(xmlrpclib.Transport, object):
 
 
 def main():
-    parser = argparse.ArgumentParser(prog=FP_VDEV_RMT,
+    parser = argparse.ArgumentParser(prog=vdev_utils.FP_VDEV_RMT,
                                      description='Run fp-vdev utilities on '
                                      'remote through XMLRPC')
     _, unknown_args = parser.parse_known_args()
@@ -50,8 +49,8 @@ def main():
     # Set the first argument to 'http://' to let xmlrpclib.Server happy.
     # Not needed in our case as we use a UNIX socket as transport
     s = xmlrpclib.Server('http://',
-                         transport=UnixStreamTransport(FP_RPCD_SOCKET_PATH))
-
+                         transport=UnixStreamTransport(vdev_utils.
+                                                       FP_RPCD_SOCKET_PATH))
     ret, out, err = s.fp_vdev_cmd(args)
     sys.stderr.write(err)
     sys.stdout.write(out)
