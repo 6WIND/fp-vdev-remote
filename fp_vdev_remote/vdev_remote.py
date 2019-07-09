@@ -46,11 +46,12 @@ def main():
 
     args = ' '.join(unknown_args)
 
+    cfg = vdev_utils.get_conf()
+    sockfile = os.path.join(cfg.get('FP_RPCD_DIR'), vdev_utils.SOCKFILE)
+
     # Set the first argument to 'http://' to let xmlrpclib.Server happy.
     # Not needed in our case as we use a UNIX socket as transport
-    s = xmlrpclib.Server('http://',
-                         transport=UnixStreamTransport(vdev_utils.
-                                                       FP_RPCD_SOCKET_PATH))
+    s = xmlrpclib.Server('http://', transport=UnixStreamTransport(sockfile))
     ret, out, err = s.fp_vdev_cmd(args)
     sys.stderr.write(err)
     sys.stdout.write(out)

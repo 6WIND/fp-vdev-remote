@@ -12,13 +12,40 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-
+import os
 import subprocess
+import ConfigParser
 
+from distutils.spawn import find_executable
 
-FP_RPCD_SOCKET_PATH = '/run/openvswitch/fp-rpcd.sock'
+_REL_CFG_PATH = '../../etc'
+_FPDEVRMT_INI = 'fp-vdev-remote.ini'
+FP_RPCD_DIR = '/var/run/fp_rpcd'
 FP_VDEV = 'fp-vdev'
 FP_VDEV_RMT = 'fp-vdev-remote'
+SOCKFILE = 'fp-rpcd.sock'
+
+
+def get_config_path():
+    fpvdevrmt_exec = find_executable('fp-vdev-remote')
+    fpvdevrmt_path = os.path.join(os.path.dirname(fpvdevrmt_exec),
+                                  _REL_CFG_PATH)
+    fpvdevrmt_opts = os.path.join(fpvdevrmt_path, _FPDEVRMT_INI)
+    return fpvdevrmt_opts
+
+#------------------------------------------------------------------------------
+def get_conf():
+    Config = ConfigParser.ConfigParser()
+    cfg_path = get_config_path()
+    Config.read(cfg_path)
+    cfg = {'FP_RPCD_DIR': FP_RPCD_DIR}
+    try:
+        cfg['FP_RPCD_DIR'] = Config.get('rpcd', 'fp_rpcd_dir')
+    except:
+        # silently return default value if fp_rpcd_dir or fp-vdev-remote.ini
+        # were not found
+        pass
+    return cfg
 
 
 def command_exists(cmd):
