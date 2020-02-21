@@ -15,7 +15,7 @@
 import fnmatch
 import os
 import subprocess
-import ConfigParser
+import configparser
 
 from distutils.spawn import find_executable
 
@@ -35,7 +35,7 @@ def get_config_path():
 
 #-------------------------------------------------------------------------------
 def get_conf():
-    Config = ConfigParser.ConfigParser()
+    Config = configparser.ConfigParser()
     cfg_path = get_config_path()
     Config.read(cfg_path)
     cfg = {'FP_RPCD_SOCK': FP_RPCD_SOCK}
