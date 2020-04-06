@@ -14,22 +14,22 @@
 #    under the License.
 
 import argparse
-import httplib
+import http.client as http_cli
 import os
 import socket
 import sys
-import xmlrpclib
+import xmlrpc.client as xrpc_cli
 
-import vdev_utils
+from fp_vdev_remote import vdev_utils
 
 
-class UnixStreamHTTPConnection(httplib.HTTPConnection):
+class UnixStreamHTTPConnection(http_cli.HTTPConnection):
     def connect(self):
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         self.sock.connect(self.host)
 
 
-class UnixStreamTransport(xmlrpclib.Transport, object):
+class UnixStreamTransport(xrpc_cli.Transport, object):
     def __init__(self, sockfile):
         self.socket_path = sockfile
         super(UnixStreamTransport, self).__init__()
@@ -46,9 +46,9 @@ def main():
 
     args = ' '.join(unknown_args)
 
-    # Set the first argument to 'http://' to let xmlrpclib.Server happy.
+    # Set the first argument to 'http://' to let xmlrpc.client.Server happy.
     # Not needed in our case as we use a UNIX socket as transport
-    s = xmlrpclib.Server('http://',
+    s = xrpc_cli.Server('http://',
                          transport=UnixStreamTransport(vdev_utils.get_rpcd_sock()))
     ret, out, err = s.fp_vdev_cmd(args)
     sys.stderr.write(err)
